@@ -73,6 +73,8 @@ jobs:
       - installers
     if: startsWith(github.ref, 'refs/tags/')
     steps:
+      - uses: actions/checkout@v3
+
       - uses: actions/download-artifact@v3
         with:
           path: artifacts
@@ -115,7 +117,6 @@ jobs:
             $TAG_NAME \
             ${{ steps.release-files.outputs.FILES }} \
             artifacts/installer-dns-introducer-healthcheck*/*.deb \
-            --repo ${{ github.repository }}
 
       - name: Trigger apt repo update
         run: |
