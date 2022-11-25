@@ -107,7 +107,7 @@ jobs:
           while IFS= read -r file; do
             gh release upload \
               $TAG_NAME \
-              $ARTIFACT
+              $file
           done <<< "$FILES"
 
           gh release upload \
