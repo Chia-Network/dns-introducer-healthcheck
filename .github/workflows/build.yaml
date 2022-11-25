@@ -91,16 +91,6 @@ jobs:
             zip -r $dir.zip $dir
           done <<< "$DIRS"
 
-      - name: Get zip filenames
-        id: release-files
-        run: |
-          FILES=$(find ${{ github.workspace }}/artifacts -type f -name 'dns-introducer-healthcheck*.zip')
-          # Replace chars in the manner GHA expects to this ends up multiline in the next step
-          FILES="${FILES//'%'/'%25'}"
-          FILES="${FILES//$'\n'/'%0A'}"
-          FILES="${FILES//$'\r'/'%0D'}"
-          echo "::set-output name=FILES::$FILES"
-
       - name: Get tag name
         if: startsWith(github.ref, 'refs/tags/')
         id: tag-name
@@ -113,10 +103,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          FILES=$(find ${{ github.workspace }}/artifacts -type f -name 'dns-introducer-healthcheck*.zip')
+          while IFS= read -r file; do
+            gh release upload \
+              $TAG_NAME \
+              $ARTIFACT
+          done <<< "$FILES"
+
           gh release upload \
             $TAG_NAME \
-            ${{ steps.release-files.outputs.FILES }} \
-            artifacts/installer-dns-introducer-healthcheck*/*.deb \
+            artifacts/installer-dns-introducer-healthcheck*/*.deb
 
       - name: Trigger apt repo update
         run: |
