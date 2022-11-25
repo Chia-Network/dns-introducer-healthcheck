@@ -114,7 +114,8 @@ jobs:
           gh release upload \
             $TAG_NAME \
             ${{ steps.release-files.outputs.FILES }} \
-            artifacts/installer-dns-introducer-healthcheck*/*.deb
+            artifacts/installer-dns-introducer-healthcheck*/*.deb \
+            --repo ${{ github.repository }}
 
       - name: Trigger apt repo update
         run: |
